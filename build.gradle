@@ -19,19 +19,30 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
-    compileOnly 'com.github.SkriptLang:Skript:2.6.2'
+    compileOnly 'org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT'
+    compileOnly 'com.github.SkriptLang:Skript:2.8.4'
     compileOnly 'com.github.Olyno:skript-migrate:1.1.0'
 
     implementation 'net.lingala.zip4j:zip4j:2.11.5'
     implementation 'io.methvin:directory-watcher:0.18.0'
-    implementation 'io.github.cdimascio:dotenv-java:2.3.2'
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
     implementation "com.coreoz:wisp:2.4.0"
     implementation "ch.eitchnet:cron:1.6.2"
+    implementation 'com.google.code.gson:gson:2.8.8'
 }
 
 jar {
+    duplicatesStrategy = 'fail' // Vous pouvez choisir 'fail', 'warn' ou 'exclude'
+    
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+
+    exclude('module-info.class') // Exclure le module-info.class de la dépendance gson
+}
+
+
+
+compileJava {
+    options.encoding = 'UTF-8'
 }

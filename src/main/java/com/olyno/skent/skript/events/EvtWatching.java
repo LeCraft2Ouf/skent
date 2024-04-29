@@ -22,6 +22,8 @@ import ch.njol.skript.util.Getter;
 import io.methvin.watcher.DirectoryChangeEvent.EventType;
 import io.methvin.watcher.DirectoryWatcher;
 
+import java.time.Instant;
+
 public class EvtWatching extends SelfRegisteringSkriptEvent {
 
     static {
@@ -56,6 +58,8 @@ public class EvtWatching extends SelfRegisteringSkriptEvent {
     private Trigger trigger;
     private WatchingEvent event;
 
+    private Instant lastEventTime;
+
     @Override
     @SuppressWarnings("unchecked")
     public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult) {
@@ -77,16 +81,19 @@ public class EvtWatching extends SelfRegisteringSkriptEvent {
             .stream()
             .map(path -> Files.isDirectory(path) ? path : path.getParent())
             .collect(Collectors.toList());
+        this.lastEventTime = Instant.now();
         try {
             this.watcher = DirectoryWatcher.builder()
                 .paths(directories)
                 .listener(event -> {
                     Path eventPath = event.path().toAbsolutePath();
                     EventType eventType = event.eventType();
-                    
                     if (allPaths.contains(eventPath) || allPaths.contains(eventPath.getParent())) {
                         if (watchAll || type == eventType) {
-                            this.event.run(event.path());
+                            if (lastEventTime.plusSeconds(1).isBefore(Instant.now())) {
+                                this.event.run(event.path());
+                                lastEventTime = Instant.now();
+                            }
                         }
                     }
                 })

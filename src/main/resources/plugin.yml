@@ -3,6 +3,7 @@ description: Manage files with Skript.
 author: Olyno
 version: 3.3.0
 main: com.olyno.skent.Skent
+api-version: 1.20
 depend:
   - Skript
 softdepend:
